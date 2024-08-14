@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Medical Store</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main">
+            <h1 style="text-align: center; margin-top: 10px;">Medical Store DataBase</h1>
+            <form id="forms">
+                <input type="text" placeholder="Medicine Name" id="MediNum"> <br>
+                <input type="number" placeholder="Medicine Price" id="MediPrice"> <br>
+                <input type="date" placeholder="Medicine Expiry" id="MediExpiry"> <br>
+                <button class="save">Save</button>
+            </form>
+
+            <table border="1" id="table">
+
+            </table>
+        </div>
+    </div>
+</body>
+
+<script>
+
+    let MedicineRecode = []
+    let DataSaver;
+    let singnal = false
+
+    class Medicine {
+        name
+        price
+        expiry
+    }
+
+
+
+    function checking() {
+        for (let i = 0; i < MedicineRecode.length; i++) {
+            if (MediNum.value.toLowerCase() == MedicineRecode[i].name.toLowerCase()) {
+                alert("This Medicine you already have")
+                singnal = true
+                break
+                
+            } else {
+                singnal = false
+            }
+            
+        }
+    }
+
+
+    forms.onsubmit = (evt) => {
+        evt.preventDefault();
+        checking()
+
+        if (singnal == false) {
+            let med = new Medicine();
+            med.name = MediNum.value
+            med.price = MediPrice.value
+            med.expiry = MediExpiry.value
+
+            MedicineRecode.push(med)
+            forms.reset();
+
+            lsPush();
+            ShowMedicine();
+        }
+    }
+
+
+
+    function lsPush() {
+        localStorage.setItem("MedicineDetial", JSON.stringify(MedicineRecode))
+    }
+
+
+    function lsGet() {
+        DataSaver = JSON.parse(localStorage.getItem("MedicineDetial")) || [];
+        MedicineRecode = DataSaver;
+    }
+
+    function ShowMedicine() {
+        table.innerHTML = ""
+        table.innerHTML = `
+            <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Expiry</th>
+                    <th>Delete</th>
+                    <th>Update</th>
+                </tr> 
+        `
+
+        MedicineRecode.forEach((data, index) => {
+            table.innerHTML += `
+            <tr>
+                <td>${data.name}</td>    
+                <td>${data.price}</td>    
+                <td>${data.expiry}</td>    
+                <td><button onclick="DeleteMedicine(${index})">DELETE</button></td>    
+                <td><button onclick="UpdateMedicine(${index})">UPDATE</button></td>    
+            </tr>
+            `
+        })
+    }
+
+
+    lsGet()
+    ShowMedicine();
+
+    function DeleteMedicine(maraindex) {
+        MedicineRecode.splice(maraindex, 1)
+        // let DataSaver = JSON.parse(localStorage.getItem("MedicineDetial")) || [];
+        localStorage.clear()
+        localStorage.setItem("MedicineDetial", JSON.stringify(MedicineRecode))
+
+        ShowMedicine()
+    }
+
+    function UpdateMedicine(maraindex) {
+        MedicineRecode[maraindex].name = prompt("Enter New Name")
+        MedicineRecode[maraindex].price = prompt("Enter New Price")
+        MedicineRecode[maraindex].expiry = prompt("Enter New Expiry")
+        localStorage.clear()
+        localStorage.setItem("MedicineDetial", JSON.stringify(MedicineRecode))
+        ShowMedicine();
+        // MedicineRecode.splice(maraindex,1)
+
+    }
+
+</script>
+
+</html>
